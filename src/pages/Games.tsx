@@ -3,80 +3,71 @@ import { useState } from "react"
 import { FlashcardGame } from "@/components/games/FlashcardGame"
 import { ListenFindGame } from "@/components/games/ListenFindGame"
 import { MatchGame } from "@/components/games/MatchGame"
+import { Chip, ChipRow } from "@/components/ui/chip"
+import { PageHeader } from "@/components/ui/section"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { allChars, categories, getCharsByCategory } from "@/data/characters"
-import { cn } from "@/lib/utils"
-
-function PoolChip({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean
-  onClick: () => void
-  children: React.ReactNode
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "flex shrink-0 items-center gap-1 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
-        active
-          ? "border-primary bg-primary text-primary-foreground"
-          : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground",
-      )}
-    >
-      {children}
-    </button>
-  )
-}
 
 export function Games() {
   const [pool, setPool] = useState<string>("all")
   const poolChars = pool === "all" ? allChars : getCharsByCategory(pool)
+  const activeCategory = categories.find((c) => c.id === pool)
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex flex-col gap-1">
-        <h1 className="font-display text-3xl md:text-4xl">学习游戏</h1>
-        <p className="text-muted-foreground">
-          选一个主题，再选一个游戏。家长陪着玩，认字更有趣。
+    <div className="flex flex-col gap-6">
+      <PageHeader
+        title="学习游戏"
+        description="先选一个主题，再选一个游戏。家长陪着玩，认字更有趣。"
+      />
+
+      <div className="flex flex-col gap-3">
+        <ChipRow>
+          <Chip active={pool === "all"} onClick={() => setPool("all")}>
+            全部字
+          </Chip>
+          {categories.map((c) => (
+            <Chip key={c.id} active={pool === c.id} onClick={() => setPool(c.id)}>
+              <span aria-hidden>{c.emoji}</span>
+              {c.name}
+            </Chip>
+          ))}
+        </ChipRow>
+        <p className="text-muted-foreground text-sm">
+          本轮用字：
+          <span className="text-foreground font-medium">
+            {activeCategory ? `${activeCategory.emoji} ${activeCategory.name}` : "全部字"}
+          </span>{" "}
+          · 共 <span className="text-foreground font-semibold">{poolChars.length}</span> 个字
         </p>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto pb-1 md:flex-wrap">
-        <PoolChip active={pool === "all"} onClick={() => setPool("all")}>
-          全部字
-        </PoolChip>
-        {categories.map((c) => (
-          <PoolChip key={c.id} active={pool === c.id} onClick={() => setPool(c.id)}>
-            <span>{c.emoji}</span>
-            {c.name}
-          </PoolChip>
-        ))}
-      </div>
-
-      <Tabs defaultValue="flashcard">
-        <TabsList className="grid h-auto w-full grid-cols-3">
-          <TabsTrigger value="flashcard" className="py-2.5">
-            🎴 翻翻看
+      <Tabs defaultValue="flashcard" className="flex flex-col gap-4">
+        <TabsList className="grid w-full grid-cols-3 sm:max-w-md">
+          <TabsTrigger value="flashcard">
+            <span aria-hidden>🎴</span>
+            <span className="hidden sm:inline">翻翻看</span>
+            <span className="sm:hidden">翻翻</span>
           </TabsTrigger>
-          <TabsTrigger value="match" className="py-2.5">
-            🧩 配对
+          <TabsTrigger value="match">
+            <span aria-hidden>🧩</span>
+            <span className="hidden sm:inline">字图配对</span>
+            <span className="sm:hidden">配对</span>
           </TabsTrigger>
-          <TabsTrigger value="listen" className="py-2.5">
-            👂 听音找字
+          <TabsTrigger value="listen">
+            <span aria-hidden>👂</span>
+            <span className="hidden sm:inline">听音找字</span>
+            <span className="sm:hidden">听音</span>
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="flashcard" className="pt-4">
+        {/* `key` remounts a game whenever the character pool changes. */}
+        <TabsContent value="flashcard">
           <FlashcardGame key={`fc-${pool}`} pool={poolChars} />
         </TabsContent>
-        <TabsContent value="match" className="pt-4">
+        <TabsContent value="match">
           <MatchGame key={`match-${pool}`} pool={poolChars} />
         </TabsContent>
-        <TabsContent value="listen" className="pt-4">
+        <TabsContent value="listen">
           <ListenFindGame key={`listen-${pool}`} pool={poolChars} />
         </TabsContent>
       </Tabs>

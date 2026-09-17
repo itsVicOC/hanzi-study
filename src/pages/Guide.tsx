@@ -7,6 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { PageHeader, SectionTitle } from "@/components/ui/section"
 
 const traits = [
   {
@@ -27,12 +28,36 @@ const traits = [
 ]
 
 const methods = [
-  { emoji: "🔍", title: "象形识字", desc: "借助汉字的象形特点看图认字，建立「字—物」联想：日像太阳、山像山峰、木像大树。" },
-  { emoji: "🎴", title: "字卡游戏", desc: "用字卡玩翻翻看、配对、接龙、寻宝，把认字变成好玩的游戏。" },
-  { emoji: "🧩", title: "游戏化闯关", desc: "听音找字、字图配对，答对及时表扬，让孩子在闯关中获得成就感。" },
-  { emoji: "📚", title: "亲子共读", desc: "读绘本时指认汉字，让孩子在故事和语境里自然认识文字。" },
-  { emoji: "🌱", title: "生活识字", desc: "从牛奶盒、路牌、商店招牌、绘本封面上发现汉字，让认字贴近生活。" },
-  { emoji: "🎵", title: "儿歌韵律", desc: "用朗朗上口的儿歌、顺口溜帮助记忆，节奏感让孩子记得更牢。" },
+  {
+    emoji: "🔍",
+    title: "象形识字",
+    desc: "借助汉字的象形特点看图认字，建立「字—物」联想：日像太阳、山像山峰、木像大树。",
+  },
+  {
+    emoji: "🎴",
+    title: "字卡游戏",
+    desc: "用字卡玩翻翻看、配对、接龙、寻宝，把认字变成好玩的游戏。",
+  },
+  {
+    emoji: "🧩",
+    title: "游戏化闯关",
+    desc: "听音找字、字图配对，答对及时表扬，让孩子在闯关中获得成就感。",
+  },
+  {
+    emoji: "📚",
+    title: "亲子共读",
+    desc: "读绘本时指认汉字，让孩子在故事和语境里自然认识文字。",
+  },
+  {
+    emoji: "🌱",
+    title: "生活识字",
+    desc: "从牛奶盒、路牌、商店招牌、绘本封面上发现汉字，让认字贴近生活。",
+  },
+  {
+    emoji: "🎵",
+    title: "儿歌韵律",
+    desc: "用朗朗上口的儿歌、顺口溜帮助记忆，节奏感让孩子记得更牢。",
+  },
 ]
 
 const schedule = [
@@ -72,21 +97,28 @@ const faqs = [
 export function Guide() {
   return (
     <div className="flex flex-col gap-10">
-      <div className="flex flex-col gap-2">
-        <h1 className="font-display text-3xl md:text-4xl">家长指南</h1>
-        <p className="max-w-2xl text-muted-foreground">
-          写给家长的识字陪伴手册：了解中班孩子的特点，用对方法，每天 10 分钟，让孩子在快乐中爱上汉字。
-        </p>
-      </div>
+      <PageHeader
+        title="家长指南"
+        description="写给家长的识字陪伴手册：了解中班孩子的特点，用对方法，每天 10 分钟，让孩子在快乐中爱上汉字。"
+      />
 
       {/* Traits */}
       <section className="flex flex-col gap-4">
-        <h2 className="font-display text-2xl">先了解：中班孩子（4–5 岁）的特点</h2>
+        <SectionTitle>先了解：中班孩子（4–5 岁）的特点</SectionTitle>
         <div className="grid gap-4 md:grid-cols-3">
-          {traits.map((t) => (
-            <Card key={t.title} className="gap-3 py-5">
-              <CardHeader className="p-0">
-                <span className="text-4xl">{t.emoji}</span>
+          {traits.map((t, i) => (
+            <Card
+              key={t.title}
+              className="enter gap-3 py-5"
+              style={{ "--i": i } as React.CSSProperties}
+            >
+              <CardHeader className="gap-2 p-0">
+                <span
+                  aria-hidden
+                  className="bg-muted flex size-12 items-center justify-center rounded-2xl text-2xl"
+                >
+                  {t.emoji}
+                </span>
                 <CardTitle className="text-lg">{t.title}</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
@@ -99,12 +131,21 @@ export function Guide() {
 
       {/* Methods */}
       <section className="flex flex-col gap-4">
-        <h2 className="font-display text-2xl">这 6 种方法，孩子更喜欢</h2>
+        <SectionTitle>这 6 种方法，孩子更喜欢</SectionTitle>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {methods.map((m) => (
-            <Card key={m.title} className="gap-2 py-5">
+          {methods.map((m, i) => (
+            <Card
+              key={m.title}
+              className="enter hover:border-primary/35 gap-2.5 py-5 transition-colors hover:shadow-md"
+              style={{ "--i": i } as React.CSSProperties}
+            >
               <CardHeader className="flex-row items-center gap-3 p-0">
-                <span className="text-3xl">{m.emoji}</span>
+                <span
+                  aria-hidden
+                  className="bg-primary-soft flex size-11 shrink-0 items-center justify-center rounded-2xl text-xl"
+                >
+                  {m.emoji}
+                </span>
                 <CardTitle className="text-lg">{m.title}</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
@@ -115,34 +156,50 @@ export function Guide() {
         </div>
       </section>
 
-      {/* Schedule */}
+      {/* Schedule — a small vertical timeline */}
       <section className="flex flex-col gap-4">
-        <h2 className="font-display text-2xl">每天 10 分钟，可以这样安排</h2>
-        <Card className="gap-4 py-5">
-          <CardContent className="flex flex-col gap-3 p-0">
-            {schedule.map((s, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <span className="flex w-28 shrink-0 items-center gap-1 text-sm font-semibold text-primary">
-                  <Clock className="size-4" />
-                  {s.time}
-                </span>
-                <span className="text-base">{s.task}</span>
-              </div>
-            ))}
+        <SectionTitle>每天 10 分钟，可以这样安排</SectionTitle>
+        <Card className="gap-4 py-6">
+          <CardContent className="p-0">
+            <ol className="flex flex-col">
+              {schedule.map((s, i) => (
+                <li key={s.task} className="flex gap-4">
+                  {/* Marker column: numbered dot plus a connector. */}
+                  <div className="flex flex-col items-center">
+                    <span className="bg-primary-soft text-primary flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-bold">
+                      {i + 1}
+                    </span>
+                    {i < schedule.length - 1 && (
+                      <span
+                        aria-hidden
+                        className="bg-border my-1 w-px flex-1"
+                      />
+                    )}
+                  </div>
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 pb-5">
+                    <span className="text-primary inline-flex items-center gap-1 text-sm font-semibold">
+                      <Clock aria-hidden className="size-3.5" />
+                      {s.time}
+                    </span>
+                    <span className="text-base">{s.task}</span>
+                  </div>
+                </li>
+              ))}
+            </ol>
           </CardContent>
         </Card>
       </section>
 
       {/* FAQ */}
       <section className="flex flex-col gap-4">
-        <h2 className="font-display text-2xl">常见问题与注意事项</h2>
+        <SectionTitle>常见问题与注意事项</SectionTitle>
         <Card className="gap-0 py-2">
-          <CardContent className="p-0 px-5">
+          <CardContent className="px-6">
             <Accordion type="single" collapsible>
               {faqs.map((f, i) => (
-                <AccordionItem key={i} value={`item-${i}`}>
+                <AccordionItem key={f.q} value={`item-${i}`}>
                   <AccordionTrigger>{f.q}</AccordionTrigger>
-                  <AccordionContent className="text-base leading-relaxed text-muted-foreground">
+                  <AccordionContent className="text-muted-foreground measure text-base leading-relaxed">
                     {f.a}
                   </AccordionContent>
                 </AccordionItem>
@@ -152,16 +209,16 @@ export function Guide() {
         </Card>
       </section>
 
-      <p className="text-center text-sm text-muted-foreground">
-        参考：
+      <p className="text-muted-foreground border-border border-t pt-6 text-center text-sm">
+        内容参考：
         <a
           href="http://www.moe.gov.cn/srcsite/A06/s3327/201807/t20180713_342997.html"
           target="_blank"
           rel="noreferrer"
-          className="ml-1 inline-flex items-center gap-1 text-primary underline-offset-4 hover:underline"
+          className="text-primary ml-1 inline-flex items-center gap-1 underline-offset-4 hover:underline"
         >
           《教育部办公厅关于开展幼儿园“小学化”专项治理工作的通知》
-          <ExternalLink className="size-3" />
+          <ExternalLink aria-hidden className="size-3" />
         </a>
       </p>
     </div>

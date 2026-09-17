@@ -64,15 +64,44 @@ src/
 ├─ lib/                      # cn / speech / storage / games / nav
 ├─ hooks/                    # useProgress（进度状态）、useSpeech（发音）
 ├─ components/
-│  ├─ ui/                    # shadcn/ui 组件
-│  ├─ layout/                # AppShell / Header / MobileNav / Footer
+│  ├─ ui/                    # shadcn/ui 组件 + chip / section 等组合件
+│  ├─ layout/                # AppShell / Header / MobileNav / Footer / BrandMark
 │  ├─ char/                  # CharCard / CharBig / StrokeDemo
 │  └─ games/                 # 翻翻看 / 配对 / 听音找字
 └─ pages/                    # Home / Library / CharacterDetail / Games / Progress / Guide
 ```
 
+## 设计系统（UI 约定）
+
+所有设计令牌集中在 `src/index.css`，改主题只需改这一处。
+
+**配色**：暖色「纸张 + 墨」体系。主色有两个层次，不要混用：
+
+| 令牌 | 值 | 用途 |
+|------|-----|------|
+| `--primary` | `#c2410c` | **可交互色**：按钮填充、链接文字（与白字对比度 5.18:1，达 WCAG AA） |
+| `--primary-vivid` | `#f97316` | 仅作装饰：图标底色、进度条、指示点。**不可**承载白色文字（仅 2.8:1） |
+| `--muted-foreground` | `#6f5d47` | 次要文字（卡片上 6.30:1） |
+| `--border` / `--border-strong` | `#efe2cf` / `#ddc9ab` | 装饰性分隔线 / 结构分隔线 |
+| `--input` | `#a18868` | 表单控件描边（≥3:1，满足非文字对比度） |
+
+**暗色模式**：跟随系统（`prefers-color-scheme`），使用暖墨色而非中性灰，暗色令牌在同一文件内维护。
+
+**阴影**：`shadow-xs…xl` 已重新定义为**暖色调、多层**阴影（`--shadow-*`）。另有 `shadow-tile`（大卡片「压得住」的抬升）与 `shadow-glow`（选中态橙色光晕）。
+
+**自定义工具类**（在 `index.css` 中定义）：
+
+- `press` — 按压回弹（`:active` 缩放），配合 `prefers-reduced-motion` 自动关闭
+- `enter` — 入场动画，用 `style={{ "--i": n }}` 做错峰
+- `bg-tianzige` — 田字格纸面背景（用于大字、字卡）
+- `font-display`（圆体标题）/ `font-serif-cn`（宋体字形）
+
+**无障碍**：所有文字对比度均满足 WCAG AA（曾用真实渲染像素复核 306 个文本节点）；移动端可点击控件高度 ≥44px；焦点环统一为 `focus-visible:outline-*`；`prefers-reduced-motion` 下关闭全部动画与过渡。
+
+**改动 UI 时请注意**：`Button`、`DialogOverlay`、`SheetOverlay` 必须使用 `forwardRef` —— Radix 的触发器/portal 会向它们传递 ref，写成普通函数组件会破坏焦点管理并触发 React 警告。
+
 ## 说明
 
 - **发音**：使用浏览器 `speechSynthesis`（`zh-CN`），个别设备无中文语音时按钮会静默降级，不影响其它功能。
-- **笔画动画**：单字笔画数据从 jsdelivr CDN 懒加载；离线或加载失败时回退为「笔画数 + 描一描」提示。
+- **笔画动画**：单字笔画数据从 jsdelivr CDN 懒加载；离线或加载失败时回退为「笔画数 + 描一描」提示。hanzi-writer 自带的颜色校验不接受 `currentColor` 或 `var(...)`，因此 `StrokeDemo` 会先把主题色解析为字面量 `rgb()` 再传入。
 - **进度存储**：保存在本设备浏览器 localStorage 中，清除浏览器数据或点击「重置进度」会清空。

@@ -43,17 +43,34 @@ export function ListenFindGame({ pool }: ListenFindGameProps) {
   const [answered, setAnswered] = useState(false)
   const [wrongPick, setWrongPick] = useState<string | null>(null)
   const [finished, setFinished] = useState(false)
+  const [speaking, setSpeaking] = useState(false)
   const scoreRef = useRef(0)
+  const timersRef = useRef<number[]>([])
 
   const q = questions[index]
 
+  // Always clear pending timers on unmount so nothing fires after teardown.
+  useEffect(() => {
+    return () => {
+      timersRef.current.forEach((t) => window.clearTimeout(t))
+    }
+  }, [])
+
   useEffect(() => {
     if (q && !finished) {
-      const t = window.setTimeout(() => sayChar(q.target.char), 400)
-      return () => window.clearTimeout(t)
+      const t = window.setTimeout(() => play(), 400)
+      timersRef.current.push(t)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, finished])
+
+  const play = () => {
+    if (!q) return
+    sayChar(q.target.char)
+    setSpeaking(true)
+    const t = window.setTimeout(() => setSpeaking(false), 700)
+    timersRef.current.push(t)
+  }
 
   const restart = () => {
     setQuestions(buildQuestions(pool, total))
@@ -84,25 +101,33 @@ export function ListenFindGame({ pool }: ListenFindGameProps) {
       scoreRef.current += 1
       setScore(scoreRef.current)
       toast.success("答对啦！👏")
-      window.setTimeout(advance, 900)
+      const t = window.setTimeout(advance, 900)
+      timersRef.current.push(t)
     } else {
       setWrongPick(option.char)
       toast.error("再听一听，再选一次")
-      window.setTimeout(() => {
+      const t = window.setTimeout(() => {
         setWrongPick(null)
         setAnswered(false)
       }, 900)
+      timersRef.current.push(t)
     }
   }
 
   if (finished) {
+    const perfect = score === total
     return (
-      <Card className="items-center gap-4 py-10 text-center">
-        <span className="text-5xl">🎊</span>
-        <h3 className="font-display text-2xl">挑战完成！</h3>
+      <Card className="items-center gap-4 px-6 py-12 text-center">
+        <span aria-hidden className="enter text-6xl">
+          {perfect ? "🌟" : "🎊"}
+        </span>
+        <h3 className="font-display text-2xl tracking-tight">
+          {perfect ? "全部答对，太棒了！" : "挑战完成！"}
+        </h3>
         <p className="text-muted-foreground">
           共 {total} 题，你答对了{" "}
-          <span className="text-lg font-bold text-primary">{score}</span> 题
+          <span className="text-primary text-lg font-bold tabular-nums">{score}</span>{" "}
+          题
         </p>
         <Button onClick={restart} size="lg">
           <RotateCcw className="size-4" />
@@ -113,32 +138,41 @@ export function ListenFindGame({ pool }: ListenFindGameProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between text-sm text-muted-foreground">
-        <span>
+    <div className="mx-auto flex w-full max-w-lg flex-col gap-4">
+      <div className="text-muted-foreground flex items-center justify-between text-sm">
+        <span className="tabular-nums">
           第 {index + 1} / {total} 题
         </span>
         <span>
-          答对 <span className="font-bold text-emerald-600">{score}</span> 题
+          答对{" "}
+          <span className="text-success font-bold tabular-nums">{score}</span> 题
         </span>
       </div>
-      <Progress value={Math.round((index / total) * 100)} />
+      <Progress value={Math.round((index / total) * 100)} aria-label="答题进度" />
 
-      <div className="flex flex-col items-center gap-3">
-        <p className="text-muted-foreground">听一听，是哪个字？</p>
-        <Button
-          size="lg"
-          variant="secondary"
-          onClick={() => sayChar(q.target.char)}
-          className="h-16 w-16 rounded-full text-2xl"
-          aria-label="重播读音"
-        >
-          <Volume2 className="size-7" />
-        </Button>
+      <div className="flex flex-col items-center gap-2 py-2">
+        <p className="text-muted-foreground text-sm">听一听，是哪个字？</p>
+        <div className="relative">
+          {speaking && (
+            <span
+              aria-hidden
+              className="bg-primary-vivid/25 absolute inset-0 animate-ping rounded-full"
+            />
+          )}
+          <Button
+            size="icon-lg"
+            variant="secondary"
+            onClick={play}
+            className="relative size-20 rounded-full [&_svg:not([class*='size-'])]:size-8"
+            aria-label="重播读音"
+          >
+            <Volume2 />
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {q.options.map((option) => {
+        {q.options.map((option, i) => {
           const isCorrect = answered && option.char === q.target.char
           const isWrong = wrongPick === option.char
           return (
@@ -147,12 +181,17 @@ export function ListenFindGame({ pool }: ListenFindGameProps) {
               type="button"
               onClick={() => choose(option)}
               disabled={answered}
+              aria-label={`选择汉字 ${option.char}`}
+              style={{ "--i": i } as React.CSSProperties}
               className={cn(
-                "flex aspect-square items-center justify-center rounded-2xl border bg-card shadow-sm transition-all select-none",
-                "font-serif-cn text-5xl font-black",
-                isCorrect && "border-emerald-400 bg-emerald-50 text-emerald-700",
-                isWrong && "animate-shake border-destructive bg-destructive/10",
-                !answered && "hover:border-primary/40 hover:shadow-md",
+                "press font-serif-cn enter flex aspect-square items-center justify-center rounded-3xl border text-5xl font-black shadow-sm select-none",
+                "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                "disabled:opacity-100",
+                isCorrect &&
+                  "border-success bg-success-soft text-success scale-[1.03] dark:text-emerald-300",
+                isWrong && "animate-shake border-destructive bg-destructive-soft",
+                !answered && "border-border bg-card hover:border-primary/45 hover:shadow-md",
+                answered && !isCorrect && "border-border bg-card opacity-55",
               )}
             >
               {option.char}

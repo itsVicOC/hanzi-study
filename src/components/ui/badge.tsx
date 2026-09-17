@@ -5,20 +5,28 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden",
+  [
+    "inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden",
+    "rounded-full border px-2.5 py-0.5 text-xs font-medium whitespace-nowrap",
+    "[&>svg]:pointer-events-none [&>svg]:size-3",
+    "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+  ].join(" "),
   {
     variants: {
       variant: {
         default:
-          "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+          "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary-hover",
         secondary:
-          "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
+          "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/75",
         destructive:
-          "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90",
+          "border-transparent bg-destructive text-destructive-foreground [a&]:hover:bg-destructive/90",
         outline:
-          "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+          "border-border-strong text-foreground [a&]:hover:bg-primary-soft",
         accent:
-          "border-transparent bg-accent text-accent-foreground [a&]:hover:bg-accent/90",
+          "border-transparent bg-accent text-accent-foreground [a&]:hover:bg-accent/80",
+        // Quiet, low-contrast chip for metadata and counters.
+        muted:
+          "border-transparent bg-muted text-muted-foreground [a&]:hover:bg-muted/70",
       },
     },
     defaultVariants: {

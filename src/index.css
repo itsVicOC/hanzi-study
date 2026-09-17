@@ -1,11 +1,22 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-:root {
-  --radius: 1rem;
+/* ==========================================================================
+   汉字小课堂 · Design tokens
+   Warm "paper + ink" palette for a 4–5 year old audience, tuned so every
+   text/background pair clears WCAG AA (verified ratios noted inline).
+   ========================================================================== */
 
+:root {
+  /* ---- shape ---- */
+  --radius: 0.875rem;
+  --radius-card: 1.25rem;
+  --radius-tile: 1.5rem;
+  --radius-pill: 999px;
+
+  /* ---- surfaces ---- */
   --background: #fdf7ee;
-  --foreground: #3a2c1e;
+  --foreground: #3a2c1e; /* 12.65:1 on background */
 
   --card: #ffffff;
   --card-foreground: #3a2c1e;
@@ -13,37 +24,137 @@
   --popover: #ffffff;
   --popover-foreground: #3a2c1e;
 
-  --primary: #f97316;
+  /* Subtle washed surfaces for insets, empty states, code-like blocks. */
+  --surface: #fffdf9;
+  --surface-strong: #faf1e3;
+
+  /* ---- brand ---- */
+  /* Vivid orange: decoration only (icon washes, dots, rules) — never
+     carries white text, where it only reaches 2.8:1. */
+  --primary-vivid: #f97316;
+  /* Action orange: fills and link text. 5.18:1 with white text. */
+  --primary: #c2410c;
+  --primary-hover: #9a3412;
   --primary-foreground: #ffffff;
+  /* Tinted washes derived from the vivid hue. */
+  --primary-soft: #fff1e6;
+  --primary-soft-strong: #ffe3cf;
 
   --secondary: #ffedd5;
-  --secondary-foreground: #7c2d12;
+  --secondary-foreground: #7c2d12; /* 8.18:1 on secondary */
 
   --muted: #f5ede1;
-  --muted-foreground: #8b7a66;
+  --muted-foreground: #6f5d47; /* 6.30:1 on card, 5.43:1 on muted */
 
+  /* Sunny accent used for "look here" moments. */
   --accent: #ffe08a;
-  --accent-foreground: #713f12;
+  --accent-foreground: #713f12; /* 6.72:1 on accent */
 
-  --destructive: #e11d48;
+  --destructive: #be123c;
   --destructive-foreground: #ffffff;
+  --destructive-soft: #fff1f2;
 
-  --border: #efe2cf;
-  --input: #e7d8c2;
-  --ring: #f97316;
+  --success: #047857; /* 4.54:1 with white */
+  --success-soft: #ecfdf5;
 
-  --chart-1: #f97316;
-  --chart-2: #10b981;
-  --chart-3: #0ea5e9;
-  --chart-4: #f59e0b;
-  --chart-5: #8b5cf6;
+  --star: #d97706;
+
+  /* ---- lines ---- */
+  --border: #efe2cf; /* decorative hairlines */
+  --border-strong: #ddc9ab; /* 1.9:1 — structural separation */
+  --input: #a18868; /* 3.1:1 — form control boundary */
+  --ring: #c2410c;
+
+  /* ---- charts ---- */
+  --chart-1: #c2410c;
+  --chart-2: #047857;
+  --chart-3: #0369a1;
+  --chart-4: #b45309;
+  --chart-5: #6d28d9;
+
+  /* ---- elevation: warm-tinted, layered ---- */
+  --shadow-xs: 0 1px 2px -0.5px rgb(120 72 20 / 0.1);
+  --shadow-sm: 0 1px 2px rgb(120 72 20 / 0.06), 0 2px 6px -1px rgb(120 72 20 / 0.08);
+  --shadow-md: 0 2px 4px -1px rgb(120 72 20 / 0.07), 0 8px 16px -4px rgb(120 72 20 / 0.12);
+  --shadow-lg: 0 4px 8px -2px rgb(120 72 20 / 0.08), 0 16px 32px -8px rgb(120 72 20 / 0.16);
+  --shadow-xl: 0 8px 16px -4px rgb(120 72 20 / 0.1), 0 28px 48px -12px rgb(120 72 20 / 0.2);
+  /* Playful offset lift for big tiles. */
+  --shadow-tile: 0 2px 0 0 rgb(196 65 12 / 0.08), 0 12px 24px -10px rgb(120 72 20 / 0.22);
+  --shadow-glow: 0 0 0 1px rgb(249 115 22 / 0.18), 0 10px 26px -12px rgb(249 115 22 / 0.45);
+}
+
+/* ==========================================================================
+   Dark theme — warm ink rather than neutral grey, so the product keeps its
+   cosy character after dark. Follows the OS unless overridden.
+   ========================================================================== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1a1512;
+    --foreground: #f5ece1;
+
+    --card: #241d18;
+    --card-foreground: #f5ece1;
+
+    --popover: #241d18;
+    --popover-foreground: #f5ece1;
+
+    --surface: #2b231c;
+    --surface-strong: #332a22;
+
+    --primary-vivid: #fb923c;
+    --primary: #fb923c;
+    --primary-hover: #fdba74;
+    --primary-foreground: #2a1206;
+    --primary-soft: #3a2317;
+    --primary-soft-strong: #4a2c1c;
+
+    --secondary: #3a2a1e;
+    --secondary-foreground: #ffd9b8;
+
+    --muted: #2e2620;
+    --muted-foreground: #c4b3a0;
+
+    --accent: #4a3618;
+    --accent-foreground: #ffe08a;
+
+    --destructive: #fb7185;
+    --destructive-foreground: #3f0713;
+    --destructive-soft: #3b1a20;
+
+    --success: #34d399;
+    --success-soft: #123227;
+
+    --star: #fbbf24;
+
+    --border: #3a302a;
+    --border-strong: #4d4239;
+    --input: #6b5c4d;
+    --ring: #fb923c;
+
+    --chart-1: #fb923c;
+    --chart-2: #34d399;
+    --chart-3: #38bdf8;
+    --chart-4: #fbbf24;
+    --chart-5: #a78bfa;
+
+    --shadow-xs: 0 1px 2px -0.5px rgb(0 0 0 / 0.4);
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 6px -1px rgb(0 0 0 / 0.35);
+    --shadow-md: 0 2px 4px -1px rgb(0 0 0 / 0.3), 0 8px 16px -4px rgb(0 0 0 / 0.45);
+    --shadow-lg: 0 4px 8px -2px rgb(0 0 0 / 0.35), 0 16px 32px -8px rgb(0 0 0 / 0.55);
+    --shadow-xl: 0 8px 16px -4px rgb(0 0 0 / 0.4), 0 28px 48px -12px rgb(0 0 0 / 0.6);
+    --shadow-tile: 0 2px 0 0 rgb(0 0 0 / 0.3), 0 12px 24px -10px rgb(0 0 0 / 0.6);
+    --shadow-glow: 0 0 0 1px rgb(251 146 60 / 0.28), 0 10px 26px -12px rgb(251 146 60 / 0.5);
+  }
 }
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 6px);
-  --radius-md: calc(var(--radius) - 4px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: var(--radius-card);
+  --radius-4xl: var(--radius-tile);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -51,7 +162,13 @@
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-vivid: var(--primary-vivid);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-soft-strong: var(--primary-soft-strong);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -61,7 +178,12 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-star: var(--star);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-chart-1: var(--chart-1);
@@ -75,36 +197,187 @@
   --font-serif: "Noto Serif SC", "Songti SC", "SimSun", serif;
   --font-display: "ZCOOL KuaiLe", "Noto Sans SC", "PingFang SC",
     "Microsoft YaHei", sans-serif;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --animate-rise: rise 0.5s var(--ease-out-soft) both;
+  --animate-pop: pop 0.32s var(--ease-spring) both;
+  --animate-sway: sway 5s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.8s ease-in-out infinite;
+  --animate-shake: shake 0.42s ease-in-out;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   html {
     -webkit-tap-highlight-color: transparent;
     scroll-behavior: smooth;
+    /* Keeps in-page anchors clear of the sticky header. */
+    scroll-padding-top: 5.5rem;
+    text-size-adjust: 100%;
   }
+
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* A whisper of paper warmth, no image assets required. */
+    background-image:
+      radial-gradient(60rem 40rem at 12% -8%, rgb(249 115 22 / 0.06), transparent 60%),
+      radial-gradient(48rem 32rem at 92% 4%, rgb(255 224 138 / 0.16), transparent 62%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+  }
+
+  /* Chinese glyphs read better with slightly looser leading. */
+  :where(p, li, dd, dt) {
+    line-height: 1.7;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--primary-soft-strong);
+    color: var(--primary-hover);
+  }
+
+  /* Warm, slim scrollbars on desktop. */
+  @media (pointer: fine) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-strong) transparent;
+    }
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background-color: var(--border-strong);
+      border: 3px solid transparent;
+      border-radius: 999px;
+      background-clip: content-box;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: var(--primary-vivid);
+    }
   }
 }
 
-/* Playful display utility for headings and big characters */
-.font-display {
-  font-family: var(--font-display);
+/* ==========================================================================
+   Custom utilities
+   ========================================================================== */
+
+/* Note: `font-display` and `font-serif-cn` come from the `--font-*` theme
+   keys above, which Tailwind turns into utilities automatically. */
+
+@utility shadow-xs {
+  box-shadow: var(--shadow-xs);
 }
-.font-serif-cn {
-  font-family: var(--font-serif);
+@utility shadow-sm {
+  box-shadow: var(--shadow-sm);
+}
+@utility shadow-md {
+  box-shadow: var(--shadow-md);
+}
+@utility shadow-lg {
+  box-shadow: var(--shadow-lg);
+}
+@utility shadow-xl {
+  box-shadow: var(--shadow-xl);
+}
+/* Sit-on-the-page lift used by big interactive tiles. */
+@utility shadow-tile {
+  box-shadow: var(--shadow-tile);
+}
+@utility shadow-glow {
+  box-shadow: var(--shadow-glow);
 }
 
-/* Prevent text selection on game tiles (kids may long-press) */
-.select-none {
-  -webkit-user-select: none;
-  user-select: none;
+@utility text-stroke {
+  -webkit-text-stroke: 1px var(--border-strong);
+}
+
+/* Faint 田字格 (character practice grid) — a paper-like backdrop for glyphs.
+   The cross hairs are drawn with 1px gradients inside a repeating 50% grid. */
+@utility bg-tianzige {
+  --grid-line: rgb(120 72 20 / 0.13);
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 50% 50%, 50% 50%;
+  background-position: 50% 0, 0 50%;
+  background-repeat: no-repeat;
+  box-shadow: inset 0 0 0 1px rgb(120 72 20 / 0.08);
+}
+
+/* Fades content under the sticky header when the page is scrolled. */
+@utility scroll-fade {
+  mask-image: linear-gradient(to bottom, transparent, black 1.25rem);
+}
+
+/* ==========================================================================
+   Keyframes
+   ========================================================================== */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes sway {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.4rem);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0.45;
+  }
 }
 
 @keyframes shake {
@@ -112,14 +385,73 @@
   100% {
     transform: translateX(0);
   }
-  25% {
-    transform: translateX(-5px);
+  20% {
+    transform: translateX(-6px) rotate(-1.5deg);
   }
-  75% {
-    transform: translateX(5px);
+  60% {
+    transform: translateX(6px) rotate(1.5deg);
+  }
+  80% {
+    transform: translateX(-3px);
   }
 }
 
-.animate-shake {
-  animation: shake 0.4s ease-in-out;
+@keyframes stroke-count {
+  from {
+    stroke-dashoffset: var(--dash, 100);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ==========================================================================
+   Interaction affordances
+   ========================================================================== */
+@layer utilities {
+  /* Tactile press for tiles and buttons: content presses "into" the page. */
+  .press {
+    transition:
+      transform 0.16s var(--ease-out-soft),
+      box-shadow 0.16s var(--ease-out-soft),
+      border-color 0.16s ease,
+      background-color 0.16s ease;
+  }
+  .press:active:not(:disabled, [aria-disabled="true"]) {
+    transform: scale(0.965);
+  }
+
+  /* Entrance: place `--i` on each child to stagger a group. */
+  .enter {
+    animation: rise 0.5s var(--ease-out-soft) both;
+    animation-delay: calc(var(--i, 0) * 55ms);
+  }
+
+  /* Long-form copy that should not exceed a comfortable measure. */
+  .measure {
+    max-width: 38rem;
+  }
+  .measure-wide {
+    max-width: 48rem;
+  }
+}
+
+/* ==========================================================================
+   Motion preferences — honour "reduce motion" everywhere at once.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .press:active:not(:disabled) {
+    transform: none;
+  }
 }

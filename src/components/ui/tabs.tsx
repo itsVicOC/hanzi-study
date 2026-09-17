@@ -13,7 +13,7 @@ function TabsList({
     <TabsPrimitive.List
       data-slot="tabs-list"
       className={cn(
-        "bg-muted text-muted-foreground inline-flex h-10 items-center justify-center rounded-lg p-1",
+        "inline-flex h-auto items-center justify-center gap-1 rounded-2xl border border-border bg-muted/70 p-1.5 text-muted-foreground",
         className,
       )}
       {...props}
@@ -29,7 +29,14 @@ function TabsTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "focus-visible:ring-ring data-[state=active]:bg-background data-[state=active]:text-foreground inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl px-3 py-3 text-sm font-medium whitespace-nowrap sm:py-2",
+        "transition-[color,background-color,box-shadow] duration-150 outline-none",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        "disabled:pointer-events-none disabled:opacity-50",
+        // Selected tab lifts out of the track like a physical switch.
+        "data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm",
+        "hover:text-foreground data-[state=active]:hover:text-foreground",
+        "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
@@ -44,7 +51,10 @@ function TabsContent({
   return (
     <TabsPrimitive.Content
       data-slot="tabs-content"
-      className={cn("flex-1 outline-none", className)}
+      className={cn(
+        "flex-1 outline-none data-[state=active]:animate-pop",
+        className,
+      )}
       {...props}
     />
   )

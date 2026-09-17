@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { Check, RotateCcw, Volume2, X } from "lucide-react"
+import { Check, Eye, RotateCcw, Volume2, X } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -38,6 +38,16 @@ export function FlashcardGame({ pool }: FlashcardGameProps) {
     setFinished(false)
   }
 
+  const advance = (nextKnown: number) => {
+    if (index + 1 >= deck.length) {
+      recordScore("flashcard", nextKnown)
+      setFinished(true)
+    } else {
+      setIndex(index + 1)
+      setFlipped(false)
+    }
+  }
+
   const markKnown = () => {
     const nextKnown = known + 1
     setKnown(nextKnown)
@@ -50,24 +60,19 @@ export function FlashcardGame({ pool }: FlashcardGameProps) {
     advance(known)
   }
 
-  const advance = (nextKnown: number) => {
-    if (index + 1 >= deck.length) {
-      recordScore("flashcard", nextKnown)
-      setFinished(true)
-    } else {
-      setIndex(index + 1)
-      setFlipped(false)
-    }
-  }
-
   if (finished) {
+    const perfect = known === deck.length
     return (
-      <Card className="items-center gap-4 py-10 text-center">
-        <span className="text-5xl">🎉</span>
-        <h3 className="font-display text-2xl">本轮完成！</h3>
+      <Card className="items-center gap-4 px-6 py-12 text-center">
+        <span aria-hidden className="enter text-6xl">
+          {perfect ? "🏆" : "🎉"}
+        </span>
+        <h3 className="font-display text-2xl tracking-tight">
+          {perfect ? "全部认识，太厉害了！" : "本轮完成！"}
+        </h3>
         <p className="text-muted-foreground">
           一共 {deck.length} 个字，你认识了{" "}
-          <span className="text-lg font-bold text-primary">{known}</span> 个
+          <span className="text-primary text-lg font-bold">{known}</span> 个
         </p>
         <Button onClick={restart} size="lg">
           <RotateCcw className="size-4" />
@@ -78,55 +83,65 @@ export function FlashcardGame({ pool }: FlashcardGameProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between text-sm text-muted-foreground">
-        <span>
+    <div className="mx-auto flex w-full max-w-md flex-col gap-4">
+      <div className="text-muted-foreground flex items-center justify-between text-sm">
+        <span className="tabular-nums">
           第 {index + 1} / {deck.length} 张
         </span>
         <span>
-          已认识 <span className="font-bold text-emerald-600">{known}</span> 个
+          已认识{" "}
+          <span className="text-success font-bold tabular-nums">{known}</span> 个
         </span>
       </div>
-      <Progress value={progress} />
+      <Progress value={progress} aria-label="本轮进度" />
 
+      {/* Flip card: three.js-free 3D flip via CSS transforms. */}
       <button
         type="button"
         onClick={() => setFlipped((f) => !f)}
-        className={cn(
-          "mx-auto flex aspect-square w-full max-w-xs flex-col items-center justify-center gap-2 rounded-3xl border bg-card p-6 shadow-sm transition-all hover:border-primary/40 hover:shadow-md",
-        )}
+        aria-label={flipped ? "盖住卡片" : "翻开卡片看答案"}
+        className="group mx-auto block aspect-4/3 w-full max-w-sm [perspective:1200px] outline-none focus-visible:outline-none"
       >
-        {flipped ? (
-          <>
-            <span className="text-6xl">{current.emoji}</span>
-            <span className="font-serif-cn text-7xl font-black">{current.char}</span>
-            <span className="text-xl text-muted-foreground">{current.pinyin}</span>
-            <span className="text-sm text-muted-foreground">{current.tip}</span>
-          </>
-        ) : (
-          <>
-            <span className="font-serif-cn text-8xl font-black md:text-9xl">
+        <span
+          className={cn(
+            "relative block size-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [transform-style:preserve-3d]",
+            "group-focus-visible:outline-2 group-focus-visible:outline-offset-4 group-focus-visible:outline-ring",
+            flipped && "[transform:rotateY(180deg)]",
+          )}
+        >
+          {/* Front — the character only */}
+          <span className="bg-tianzige shadow-tile border-border absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-4xl border bg-card px-6 [backface-visibility:hidden]">
+            <span className="font-serif-cn text-8xl leading-none font-black">
               {current.char}
             </span>
-            <span className="text-sm text-muted-foreground">点一下卡片，看看秘密</span>
-          </>
-        )}
+            <span className="text-muted-foreground text-sm">
+              点一下卡片，看看秘密
+            </span>
+          </span>
+
+          {/* Back — emoji, character, pinyin, tip */}
+          <span className="from-primary-soft shadow-tile border-primary/25 absolute inset-0 flex flex-col items-center justify-center gap-1.5 rounded-4xl border bg-gradient-to-b to-card px-6 [backface-visibility:hidden] [transform:rotateY(180deg)]">
+            <span aria-hidden className="text-5xl">
+              {current.emoji}
+            </span>
+            <span className="font-serif-cn text-6xl leading-none font-black">
+              {current.char}
+            </span>
+            <span className="text-primary text-xl font-semibold">{current.pinyin}</span>
+            <span className="text-muted-foreground mt-1 text-center text-sm">
+              {current.tip}
+            </span>
+          </span>
+        </span>
       </button>
 
       <div className="flex flex-wrap items-center justify-center gap-2">
-        <Button
-          variant="secondary"
-          size="lg"
-          onClick={() => sayChar(current.char)}
-        >
-          <Volume2 className="size-5" />
+        <Button variant="secondary" onClick={() => sayChar(current.char)}>
+          <Volume2 className="size-4" />
           读音
         </Button>
-        <Button
-          variant="outline"
-          size="lg"
-          onClick={() => setFlipped((f) => !f)}
-        >
+        <Button variant="outline" onClick={() => setFlipped((f) => !f)}>
+          <Eye className="size-4" />
           {flipped ? "盖住卡片" : "揭示答案"}
         </Button>
       </div>
@@ -135,17 +150,12 @@ export function FlashcardGame({ pool }: FlashcardGameProps) {
         <Button
           size="lg"
           onClick={markKnown}
-          className="h-14 bg-emerald-600 text-lg hover:bg-emerald-600/90"
+          className="bg-success hover:bg-success/90 h-14 text-base text-white dark:text-emerald-950"
         >
-          <Check className="size-5" />
+          <Check className="size-5" strokeWidth={2.5} />
           认识了
         </Button>
-        <Button
-          size="lg"
-          variant="outline"
-          onClick={markUnknown}
-          className="h-14 text-lg"
-        >
+        <Button size="lg" variant="outline" onClick={markUnknown} className="h-14 text-base">
           <X className="size-5" />
           还不熟
         </Button>
